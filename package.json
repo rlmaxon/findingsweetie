@@ -1,0 +1,39 @@
+{
+  "name": "findingsweetie",
+  "version": "1.0.0",
+  "description": "AI-assisted lost pet recovery platform",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend && pip install -r ai-service/requirements.txt",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:ai": "cd ai-service && uvicorn src.main:app --reload",
+    "build:backend": "npm run build --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:build": "docker-compose build",
+    "test": "npm test --prefix backend && npm test --prefix frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/findingsweetie.git"
+  },
+  "keywords": [
+    "pet",
+    "lost-pet",
+    "ai",
+    "machine-learning",
+    "geospatial",
+    "react",
+    "nodejs",
+    "typescript"
+  ],
+  "author": "Finding Sweetie Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  }
+}
