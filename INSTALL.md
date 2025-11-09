@@ -300,6 +300,71 @@ pm2 set pm2-logrotate:retain 7
 
 ## Troubleshooting
 
+### PM2 Shows No Processes
+
+If `pm2 status` shows an empty list or command not found:
+
+**Issue 1: PM2 not installed**
+
+Check if PM2 is installed:
+```bash
+pm2 --version
+```
+
+If not found, install PM2 globally:
+```bash
+npm install -g pm2
+```
+
+**Issue 2: No processes started**
+
+PM2 is installed but no processes are running. This means you haven't started the applications yet.
+
+For **production setup** (after running setup scripts):
+```bash
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup  # Follow the instructions to enable startup on boot
+```
+
+For **development setup** (without full production installation):
+```bash
+# First, ensure backend is built
+cd backend
+npm install
+npm run build
+cd ..
+
+# Ensure AI service is set up
+cd ai-service
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+# Or for CPU-only: bash install-cpu.sh
+deactivate
+cd ..
+
+# Create .env file if not exists
+cp .env.example .env
+# Edit .env with your configuration
+
+# Start with development config
+pm2 start ecosystem.dev.config.js
+pm2 save
+```
+
+**Verify processes are running:**
+```bash
+pm2 status
+# Should show:
+# - findingsweetie-backend (2 instances)
+# - findingsweetie-ai (1 instance)
+```
+
+**Note**: The main difference between `ecosystem.config.js` (production) and `ecosystem.dev.config.js` (development):
+- Production uses `/var/www/findingsweetie/` paths
+- Development uses `/home/user/findingsweetie/` paths
+
 ### Backend Won't Start
 
 Check logs:
