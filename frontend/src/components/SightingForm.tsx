@@ -35,7 +35,7 @@ const SightingForm: React.FC<SightingFormProps> = ({ petId, onSuccess }) => {
           }));
           toast.success('Location captured!');
         },
-        (error) => {
+        (_error) => {
           toast.error('Failed to get location. Please enter manually.');
           setUseCurrentLocation(false);
         }
