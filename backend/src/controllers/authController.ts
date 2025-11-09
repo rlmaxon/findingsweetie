@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { UserModel } from '../models/User';
 import { body, validationResult } from 'express-validator';
+import type { StringValue } from 'ms';
 
 export const registerValidation = [
   body('email').isEmail().normalizeEmail(),
@@ -38,10 +39,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     // Generate JWT token
     const secret: string = process.env.JWT_SECRET || 'your_jwt_secret_here_change_in_production';
+    const options: SignOptions = {
+      expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as StringValue
+    };
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       secret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
+      options
     );
 
     res.status(201).json({
@@ -84,10 +88,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Generate JWT token
     const secret: string = process.env.JWT_SECRET || 'your_jwt_secret_here_change_in_production';
+    const options: SignOptions = {
+      expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as StringValue
+    };
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       secret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
+      options
     );
 
     res.json({
