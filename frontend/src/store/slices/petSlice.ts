@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { petAPI } from '../../services/api';
 import type { Pet, CreatePetData, MarkLostData } from '../../types';
 
