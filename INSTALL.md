@@ -6,8 +6,17 @@ This guide provides step-by-step instructions for installing Finding Sweetie on 
 
 - **OS**: Ubuntu 20.04 LTS or newer
 - **RAM**: Minimum 4GB, recommended 8GB+ (for AI service)
-- **Storage**: Minimum 20GB free space
+- **Storage**: Minimum 20GB free space (or 10GB with CPU-only deployment)
 - **Network**: Internet connection for package downloads
+
+### Reduced Disk Space Requirements (CPU-Only Deployment)
+
+If you have limited hard drive space, you can use a CPU-only deployment which reduces the disk space requirements significantly:
+
+- **Standard installation**: ~20GB (includes GPU-enabled PyTorch with CUDA)
+- **CPU-only installation**: ~10GB (PyTorch CPU version only, saves 2-3GB)
+
+**Note**: The CPU-only deployment is suitable for small-scale deployments and development. For production environments with high traffic, GPU acceleration is recommended for better AI matching performance.
 
 ## Prerequisites
 
@@ -315,6 +324,16 @@ If packages are missing:
 ```bash
 pip install -r requirements.txt
 ```
+
+**For CPU-only installation (reduced disk space)**:
+```bash
+cd ai-service
+source venv/bin/activate
+# Use the CPU-only installation script
+bash install-cpu.sh
+```
+
+This installs PyTorch CPU-only versions, saving 2-3GB of disk space.
 
 ### Frontend Not Loading
 

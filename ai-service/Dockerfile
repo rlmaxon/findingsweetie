@@ -12,8 +12,11 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies (using PyTorch CPU-only index for reduced size)
+# Install PyTorch CPU-only versions first from PyTorch index
+RUN pip install --no-cache-dir torch==2.1.1+cpu torchvision==0.16.1+cpu --index-url https://download.pytorch.org/whl/cpu
+# Then install remaining dependencies
+RUN pip install --no-cache-dir fastapi uvicorn[standard] python-multipart pillow numpy scikit-learn redis psycopg2-binary python-dotenv requests imagehash
 
 # Copy source code
 COPY src ./src

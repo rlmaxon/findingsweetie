@@ -2,6 +2,8 @@
 
 ## TL;DR - Get Running in 15 Minutes
 
+**System Requirements**: Ubuntu 20.04+, 4GB RAM, 10GB disk space (CPU-only) or 20GB (with GPU support)
+
 For those who want to get started quickly on Ubuntu:
 
 ```bash
@@ -133,8 +135,10 @@ pm2 logs  # Check for errors
 - Check Nginx: `sudo systemctl status nginx`
 - Verify build exists: `ls /var/www/findingsweetie/frontend/`
 
-**AI service crashes**
+**AI service crashes or out of disk space**
 - Check memory: `free -h` (needs 4GB+ RAM)
+- Check disk space: `df -h`
+- For limited disk space, use CPU-only installation: `cd ai-service && bash install-cpu.sh`
 - Verify Python packages: `cd ai-service && source venv/bin/activate && pip list`
 
 ## Next Steps

@@ -73,7 +73,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # AI Matching Service
+  # AI Matching Service (CPU-only, optimized for reduced disk space)
   ai-service:
     build:
       context: ./ai-service
@@ -100,7 +100,7 @@ services:
       resources:
         limits:
           cpus: '2'
-          memory: 4G
+          memory: 2G  # Reduced from 4G for CPU-only deployment
 
   # Frontend
   frontend:

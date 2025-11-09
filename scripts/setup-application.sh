@@ -33,7 +33,9 @@ cd ai-service
 python3.11 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+# Use CPU-only installation to reduce disk space requirements
+echo "Installing CPU-only PyTorch packages (saves 2-3GB)..."
+bash install-cpu.sh
 deactivate
 cd ..
 
