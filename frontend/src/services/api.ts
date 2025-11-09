@@ -1,9 +1,7 @@
 import axios from 'axios';
 import type {
-  User,
   Pet,
   Sighting,
-  Notification,
   CreatePetData,
   MarkLostData,
   CreateSightingData,
