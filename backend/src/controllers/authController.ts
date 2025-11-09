@@ -37,7 +37,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const user = await UserModel.create(email, password, firstName, lastName, phone);
 
     // Generate JWT token
-    const secret = process.env.JWT_SECRET || 'your_jwt_secret_here_change_in_production';
+    const secret: string = process.env.JWT_SECRET || 'your_jwt_secret_here_change_in_production';
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       secret,
@@ -83,7 +83,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Generate JWT token
-    const secret = process.env.JWT_SECRET || 'your_jwt_secret_here_change_in_production';
+    const secret: string = process.env.JWT_SECRET || 'your_jwt_secret_here_change_in_production';
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       secret,
