@@ -46,12 +46,13 @@ sudo cp -r backend $APP_DIR/
 sudo cp -r frontend/dist $APP_DIR/frontend
 sudo cp -r ai-service $APP_DIR/
 sudo cp .env $APP_DIR/
+sudo cp ecosystem.config.js $APP_DIR/
 sudo chown -R findingsweetie:findingsweetie $APP_DIR
 
 # Setup PM2 ecosystem
 echo "Setting up PM2 processes..."
 sudo -u findingsweetie pm2 delete all || true
-sudo -u findingsweetie pm2 start ecosystem.config.js
+sudo -u findingsweetie pm2 start $APP_DIR/ecosystem.config.js
 sudo -u findingsweetie pm2 save
 sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u findingsweetie --hp /home/findingsweetie
 
