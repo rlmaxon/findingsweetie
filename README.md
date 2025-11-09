@@ -41,7 +41,8 @@
 - Image similarity scoring
 
 **Infrastructure**
-- Docker & Docker Compose
+- Ubuntu Linux (bare metal deployment)
+- PM2 process manager
 - GitHub Actions CI/CD
 - Nginx reverse proxy
 
@@ -49,16 +50,19 @@
 
 ### Prerequisites
 
-- Node.js 20+
-- Python 3.11+
-- Docker & Docker Compose
-- PostgreSQL 15+ with PostGIS
-- Redis 7+
-- AWS account (for S3)
+**System Requirements**
+- Ubuntu 20.04 LTS or newer
+- 4GB RAM minimum (8GB+ recommended)
+- 20GB free disk space
+- Sudo/root access
+
+**External Services**
+- AWS account (for S3 image storage)
 - Mapbox account (for maps)
+- SMTP account (for email notifications)
 - Twilio account (optional, for SMS)
 
-### Quick Start with Docker
+### Quick Start (Ubuntu Linux)
 
 1. **Clone the repository**
 ```bash
@@ -66,72 +70,97 @@ git clone https://github.com/yourusername/findingsweetie.git
 cd findingsweetie
 ```
 
-2. **Configure environment variables**
+2. **Run system setup**
+```bash
+sudo ./scripts/setup-system.sh
+```
+This installs Node.js, PostgreSQL, Redis, Python, and other dependencies.
+
+3. **Set up database**
+```bash
+sudo -u postgres psql -f scripts/setup-database.sql
+```
+
+4. **Configure environment**
 ```bash
 cp .env.example .env
-# Edit .env with your actual credentials
+nano .env  # Edit with your credentials
 ```
 
-3. **Start all services**
+5. **Install and deploy application**
 ```bash
-docker-compose up -d
+./scripts/setup-application.sh
 ```
 
-4. **Initialize database**
-```bash
-docker-compose exec database psql -U postgres -d findingsweetie -f /docker-entrypoint-initdb.d/schema.sql
-```
-
-5. **Access the application**
+6. **Access the application**
 - Frontend: http://localhost
 - Backend API: http://localhost:3000
 - AI Service: http://localhost:8000
 
-### Manual Setup (Development)
+**📖 For detailed installation instructions, see [INSTALL.md](INSTALL.md)**
 
-#### Backend Setup
+### Development Mode
 
+Start all services in development mode:
+
+```bash
+./scripts/dev.sh
+```
+
+Or start services individually:
+
+**Backend**
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Configure your .env file
 npm run dev
 ```
 
-#### Frontend Setup
-
+**Frontend**
 ```bash
 cd frontend
 npm install
-cp .env.example .env
-# Configure your .env file with Mapbox token
 npm run dev
 ```
 
-#### AI Service Setup
-
+**AI Service**
 ```bash
 cd ai-service
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3.11 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-# Configure your .env file
 uvicorn src.main:app --reload --port 8000
 ```
 
-#### Database Setup
+### Production Management
 
+**Start services**
 ```bash
-# Create database
-createdb findingsweetie
+pm2 start ecosystem.config.js
+sudo systemctl start nginx
+```
 
-# Enable PostGIS extension
-psql -d findingsweetie -c "CREATE EXTENSION postgis;"
+**Stop services**
+```bash
+./scripts/stop.sh
+```
 
-# Run schema
-psql -d findingsweetie -f database/schema.sql
+**Restart services**
+```bash
+./scripts/restart.sh
+```
+
+**View logs**
+```bash
+pm2 logs
+pm2 logs findingsweetie-backend
+pm2 logs findingsweetie-ai
+```
+
+**Monitor services**
+```bash
+pm2 status
+pm2 monit
 ```
 
 ## Configuration
@@ -308,33 +337,67 @@ SELECT * FROM find_nearby_sightings(
 
 ## Deployment
 
-### Production Deployment with Docker
+### Ubuntu Production Deployment
 
+See [INSTALL.md](INSTALL.md) for complete installation guide.
+
+**Quick deployment steps:**
+
+1. Install system dependencies: `sudo ./scripts/setup-system.sh`
+2. Configure database: `sudo -u postgres psql -f scripts/setup-database.sql`
+3. Configure environment: `cp .env.example .env && nano .env`
+4. Deploy application: `./scripts/setup-application.sh`
+5. Set up SSL: `sudo certbot --nginx -d yourdomain.com`
+6. Configure firewall: `sudo ufw allow 80,443/tcp && sudo ufw enable`
+
+### Production Hardening
+
+**SSL/HTTPS**
 ```bash
-# Build and deploy
-docker-compose -f docker-compose.yml up -d
-
-# View logs
-docker-compose logs -f
-
-# Scale services
-docker-compose up -d --scale ai-service=3
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
 ```
 
-### AWS Deployment
+**Firewall**
+```bash
+sudo ufw allow 22/tcp   # SSH
+sudo ufw allow 80/tcp   # HTTP
+sudo ufw allow 443/tcp  # HTTPS
+sudo ufw enable
+```
 
-1. **Set up ECS cluster**
-2. **Configure RDS PostgreSQL with PostGIS**
-3. **Set up ElastiCache Redis**
-4. **Configure S3 bucket for images**
-5. **Deploy containers to ECS**
-6. **Configure ALB for load balancing**
+**Automated Backups**
+```bash
+# Create backup script
+cat > /home/findingsweetie/backup-db.sh << 'EOF'
+#!/bin/bash
+BACKUP_DIR="/var/backups/findingsweetie"
+mkdir -p $BACKUP_DIR
+pg_dump -U findingsweetie_user findingsweetie | gzip > \
+  $BACKUP_DIR/findingsweetie-$(date +%Y%m%d-%H%M%S).sql.gz
+find $BACKUP_DIR -name "*.sql.gz" -mtime +30 -delete
+EOF
 
-### Environment-Specific Configs
+chmod +x /home/findingsweetie/backup-db.sh
 
-- **Development**: `docker-compose.yml`
-- **Staging**: `docker-compose.staging.yml`
-- **Production**: `docker-compose.prod.yml`
+# Add to crontab (daily at 2 AM)
+(crontab -l 2>/dev/null; echo "0 2 * * * /home/findingsweetie/backup-db.sh") | crontab -
+```
+
+### Monitoring
+
+```bash
+# System resources
+htop
+
+# Service status
+pm2 status
+pm2 monit
+
+# Logs
+pm2 logs --lines 100
+tail -f /var/log/nginx/findingsweetie-access.log
+```
 
 ## Testing
 
