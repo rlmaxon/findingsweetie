@@ -1,3 +1,7 @@
+// PM2 Production Ecosystem Configuration
+// This config is for production deployments with apps in /var/www/findingsweetie/
+// For development, use ecosystem.dev.config.js instead
+
 module.exports = {
   apps: [
     {
