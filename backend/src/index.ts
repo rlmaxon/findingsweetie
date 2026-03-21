@@ -3,13 +3,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 import authRoutes from './routes/auth';
 import petRoutes from './routes/pets';
 import sightingRoutes from './routes/sightings';
 import shareRoutes from './routes/share';
 import pool from './config/database';
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,9 +42,11 @@ app.use('/api/pets', petRoutes);
 app.use('/api/sightings', sightingRoutes);
 app.use('/api', shareRoutes);
 
-// 404 handler
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ error: 'Route not found' });
+// Serve frontend static files
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDist));
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
 // Error handler
