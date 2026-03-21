@@ -28,12 +28,13 @@ module.exports = {
       name: 'findingsweetie-ai',
       script: 'venv/bin/uvicorn',
       args: 'src.main:app --host 0.0.0.0 --port 8000 --workers 2',
+      interpreter: 'none',
       cwd: '/home/user/findingsweetie/ai-service',
       instances: 1,
       exec_mode: 'fork',
       env: {
         PORT: 8000,
-        PYTHONPATH: '/home/user/findingsweetie/ai-service'
+        PYTHONPATH: '/home/user/findingsweetie/ai-service/src'
       },
       env_file: '/home/user/findingsweetie/.env',
       error_file: '/home/user/findingsweetie/logs/ai-error.log',
