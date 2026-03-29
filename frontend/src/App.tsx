@@ -6,6 +6,7 @@ import { store } from './store';
 import type { RootState } from './store';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Footer from './components/Footer';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
@@ -37,7 +38,10 @@ const AppRoutes: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <AppRoutes />
+      <div className="flex flex-col min-h-screen">
+        <AppRoutes />
+        <Footer />
+      </div>
       <ToastContainer position="top-right" autoClose={3000} />
     </Provider>
   );
