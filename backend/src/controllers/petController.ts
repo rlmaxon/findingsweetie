@@ -210,6 +210,49 @@ export const deletePet = async (req: AuthRequest, res: Response): Promise<void> 
   }
 };
 
+export const uploadPetPhotos = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const petId = parseInt(req.params.id);
+    const pet = await PetModel.findById(petId);
+
+    if (!pet) {
+      res.status(404).json({ error: 'Pet not found' });
+      return;
+    }
+
+    if (pet.owner_id !== req.user.userId) {
+      res.status(403).json({ error: 'You can only add photos to your own pets' });
+      return;
+    }
+
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: 'No files uploaded' });
+      return;
+    }
+
+    const newPhotoUrls = files.map(f => `/uploads/${f.filename}`);
+    const existingPhotos: string[] = Array.isArray(pet.photos) ? pet.photos : [];
+    const allPhotos = [...existingPhotos, ...newPhotoUrls].slice(0, 10);
+
+    const updatedPet = await PetModel.update(petId, { photos: allPhotos });
+
+    res.json({
+      message: 'Photos uploaded successfully',
+      photos: newPhotoUrls,
+      pet: updatedPet
+    });
+  } catch (error) {
+    console.error('Upload pet photos error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export const findLostPetsNearby = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { latitude, longitude, radius } = req.query;

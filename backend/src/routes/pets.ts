@@ -7,11 +7,13 @@ import {
   markAsFound,
   updatePet,
   deletePet,
+  uploadPetPhotos,
   findLostPetsNearby,
   createPetValidation,
   markLostValidation
 } from '../controllers/petController';
 import { authenticateToken } from '../middleware/auth';
+import { upload } from '../middleware/upload';
 
 const router = Router();
 
@@ -26,5 +28,6 @@ router.post('/:id/lost', authenticateToken, markLostValidation, markAsLost);
 router.post('/:id/found', authenticateToken, markAsFound);
 router.put('/:id', authenticateToken, updatePet);
 router.delete('/:id', authenticateToken, deletePet);
+router.post('/:id/photos', authenticateToken, upload.array('photos', 10), uploadPetPhotos);
 
 export default router;

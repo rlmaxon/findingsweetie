@@ -42,6 +42,9 @@ app.use('/api/pets', petRoutes);
 app.use('/api/sightings', sightingRoutes);
 app.use('/api', shareRoutes);
 
+// Serve uploaded pet photos
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+
 // Serve frontend static files
 const frontendDist = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(frontendDist));
@@ -50,7 +53,8 @@ app.get('*', (req: Request, res: Response) => {
 });
 
 // Error handler
-app.use((err: Error, req: Request, res: Response, next: any) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: Request, res: Response, next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(500).json({
     error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
